@@ -70,3 +70,13 @@ def test_consumer_receives_event():
     messages = consumer.consume()
 
     assert len(messages) == 1
+
+
+def test_pipeline_reaches_downstream_aiops_output():
+    result = run_pipeline(Path("data/service_data.json"))
+
+    assert result["records_processed"] == 10
+    assert len(result["anomalies_detected"]) == 2
+    assert len(result["events_consumed"]) == 2
+    assert len(result["aiops_output"]) == 2
+    assert all(output["status"] == "processed" for output in result["aiops_output"])

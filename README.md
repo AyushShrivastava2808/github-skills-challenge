@@ -97,3 +97,35 @@ One limitation is that the detector uses fixed thresholds rather than learning a
 baseline. A rolling baseline or adaptive thresholds could reduce false positives when normal
 traffic patterns change and could identify gradual degradation below the fixed limits.
 
+## Task 4: Verify the AIOps Event Flow
+
+The event-processing workflow uses the existing in-memory architecture:
+
+- Event: the detector creates a structured `ANOMALY` message containing the timestamp, service,
+    reasons, and original source record.
+- Producer: `EventProducer.publish()` accepts the anomaly event and publishes it.
+- Topic: `EventTopic("anomaly-events")` stores the published messages in memory.
+- Consumer: `EventConsumer.consume()` reads the messages from the same topic.
+- AIOps processing: `EventConsumer.process()` converts each consumed event into a downstream
+    status, service, timestamp, and issue summary.
+
+The producer and consumer were initially connected to different topics, so the consumer received
+no events. They were corrected to share the `anomaly-events` topic. Package-compatible imports
+were also added so the workflow can run from the repository root with `python3 -m`.
+
+### Task 4 Execution Result
+
+Running `python3 -m src.aiops_pipeline` produced this result:
+
+```text
+Records processed: 10
+Anomalies detected: 2
+Events consumed: 2
+AIOps Output:
+processed: payment-service at 2026-09-20T10:05:00
+processed: payment-service at 2026-09-20T10:06:00
+```
+
+This confirms the complete flow: operational data -> anomaly event -> producer -> shared topic
+-> consumer -> downstream AIOps output. The event-flow tests also pass with `5 passed`.
+
