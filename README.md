@@ -73,3 +73,27 @@ The two records from 10:05–10:06 appear unusual:
 The data therefore shows a short incident between 10:05 and 10:06, followed by a return to
 normal-looking values at 10:07.
 
+## Task 3: Identify Anomalies
+
+The provided `AnomalyDetector` was run against all 10 records using its existing threshold-based
+architecture. It uses thresholds of 500 ms for response time, 80% for CPU, and 80% for memory.
+The detector was corrected to treat `WARNING`, `ERROR`, and `CRITICAL` as concerning log levels;
+the supplied incident records use `ERROR`.
+
+### Detection Report
+
+Two anomalies were detected and eight normal observations were not flagged:
+
+| Timestamp | Detected reasons | Evidence |
+| --- | --- | --- |
+| 10:05 | High response time; Error log detected | 610 ms response time and `ERROR` message: Payment service timeout. |
+| 10:06 | High response time; High CPU utilization; High memory utilization; Error log detected | 640 ms response time, 94% CPU, 91% memory, and `ERROR` message: Database connection timeout. |
+
+The result is readable because every anomaly event includes its timestamp, service, anomaly type,
+reasons, and original source record. No expected anomaly was missed, and no normal `INFO` event
+was incorrectly flagged in the supplied data.
+
+One limitation is that the detector uses fixed thresholds rather than learning a service-specific
+baseline. A rolling baseline or adaptive thresholds could reduce false positives when normal
+traffic patterns change and could identify gradual degradation below the fixed limits.
+
