@@ -145,3 +145,24 @@ The corrected workflow was executed again after the changes. It processed 10 rec
 anomalies, consumed 2 events, produced 2 downstream AIOps outputs, and passed all 5 pipeline
 tests. No external Kafka, Airflow, cloud service, or replacement architecture was introduced.
 
+## Task 6: Execute the End-to-End Pipeline
+
+The corrected pipeline was executed after the workflow investigation. The complete path was:
+
+`Operational Data -> Anomaly Detection -> Event -> Producer -> anomaly-events Topic -> Consumer -> AIOps Output`
+
+The execution report verified every required stage:
+
+| Verification | Result |
+| --- | --- |
+| Operational data processed | PASS: 10 records processed |
+| Abnormal behaviour detected | PASS: 2 anomalies detected |
+| Anomaly events generated | PASS: both events have type `ANOMALY` |
+| Events published and consumed | PASS: 2 events consumed from the topic |
+| Events processed successfully | PASS: 2 outputs have status `processed` |
+| Final output represents the issue | PASS: outputs include timestamps, service, and anomaly reasons |
+
+The final outputs identify the payment-service timeout at 10:05 and the database connection
+timeout with high CPU and memory usage at 10:06. The complete execution finished with overall
+status `SUCCESS`.
+
