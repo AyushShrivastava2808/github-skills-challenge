@@ -129,3 +129,19 @@ processed: payment-service at 2026-09-20T10:06:00
 This confirms the complete flow: operational data -> anomaly event -> producer -> shared topic
 -> consumer -> downstream AIOps output. The event-flow tests also pass with `5 passed`.
 
+## Task 5: Investigate and Correct the Workflow
+
+The following problems were found by tracing the provided components and rerunning the affected
+workflow after each correction:
+
+| Component | Cause | Correction | Verification |
+| --- | --- | --- | --- |
+| `AnomalyDetector` | The supplied rule checked only `WARNING`, while the data uses `ERROR` for both incident records. | Recognize `WARNING`, `ERROR`, and `CRITICAL` log levels as concerning events. | The detector report includes `Error log detected` for both incident timestamps and leaves all eight `INFO` records unflagged. |
+| `EventProducer` / `EventConsumer` / `EventTopic` | The producer published to `service-events`, but the consumer listened to a separate `anomaly-events` topic. | Create one shared `anomaly-events` topic and pass it to both producer and consumer. | The pipeline now reports 2 detected events and 2 consumed events. |
+| `src` imports | Modules used top-level imports that failed when the pipeline was run as the package module from the repository root. | Use package-relative imports with a script-execution fallback. | `python3 -m src.aiops_pipeline` executes successfully from the repository root. |
+| `EventConsumer` / downstream output | The consumer returned messages but did not process them for the downstream AIOps stage. | Add `process()` and return `aiops_output` from the pipeline. | The final run reports two `processed` AIOps outputs and the event-flow tests pass. |
+
+The corrected workflow was executed again after the changes. It processed 10 records, detected 2
+anomalies, consumed 2 events, produced 2 downstream AIOps outputs, and passed all 5 pipeline
+tests. No external Kafka, Airflow, cloud service, or replacement architecture was introduced.
+
