@@ -194,3 +194,21 @@ The expected demonstration result is 10 records processed, 2 anomalies detected,
 consumed, 2 downstream AIOps outputs, and passing event-flow tests. The written analysis and
 execution results in this README are based on the supplied data and do not rely on screenshots.
 
+## Task 8: Validation Results
+
+The provided validation suite was run from the repository root with:
+
+```bash
+python3 -m pytest -q
+```
+
+Result:
+
+```text
+9 passed in 0.02s
+```
+
+An additional end-to-end validation confirmed that operational data processing, expected anomaly
+detection, anomaly event generation, producer/topic/consumer movement, consumer processing, and
+final AIOps completion all passed. No validation failures remained before submission.
+
