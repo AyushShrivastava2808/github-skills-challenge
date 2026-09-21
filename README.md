@@ -166,3 +166,31 @@ The final outputs identify the payment-service timeout at 10:05 and the database
 timeout with high CPU and memory usage at 10:06. The complete execution finished with overall
 status `SUCCESS`.
 
+## Task 7: Reproduce the Demonstration
+
+Another user can reproduce the results with these steps:
+
+1. Open the fork in a GitHub Codespace using the default configuration.
+2. Open a terminal at the repository root.
+3. Install the listed Python dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Run the complete workflow:
+
+    ```bash
+    python3 -m src.aiops_pipeline
+    ```
+
+5. Run the workflow validation tests:
+
+    ```bash
+    python3 -m pytest -q tests/test_aiops_pipeline.py
+    ```
+
+The expected demonstration result is 10 records processed, 2 anomalies detected, 2 events
+consumed, 2 downstream AIOps outputs, and passing event-flow tests. The written analysis and
+execution results in this README are based on the supplied data and do not rely on screenshots.
+
